@@ -23,10 +23,10 @@ cp .env.example .env
 Desde la raíz del repositorio, una terminal por servicio:
 
 ```bash
-php -S localhost:8001 -t ms-auth/public
-php -S localhost:8002 -t ms-empleados/public
-php -S localhost:8003 -t ms-incapacidades/public
-php -S localhost:8004 -t ms-seguimiento/public
+php -S 127.0.0.1:8001 -t ms-auth/public
+php -S 127.0.0.1:8002 -t ms-empleados/public
+php -S 127.0.0.1:8003 -t ms-incapacidades/public
+php -S 127.0.0.1:8004 -t ms-seguimiento/public
 ```
 
 `GET /` en cada servicio indica si está funcionando y si conecta a su base de datos.
