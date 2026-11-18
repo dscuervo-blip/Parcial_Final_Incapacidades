@@ -30,3 +30,18 @@ php -S 127.0.0.1:8004 -t ms-seguimiento/public
 ```
 
 `GET /` en cada servicio indica si está funcionando y si conecta a su base de datos.
+
+## Autenticación
+
+1. `POST /login` en ms-auth devuelve un token y marca `sesion_activa = 1`.
+2. Las rutas protegidas exigen el header `Authorization: Bearer <token>`.
+3. `AuthMiddleware` (presente en los 4 servicios) valida que el token exista, que la sesión esté activa y que el usuario esté activo. Puede restringir por rol: `new AuthMiddleware(['administrador'])`.
+4. `POST /logout` invalida el token.
+
+Los microservicios no se comunican entre sí. Para validar el token, cada uno abre una conexión **de solo lectura** (`auth`, variables `AUTH_DB_*` del `.env`) a la base de datos de ms-auth.
+
+Todas las respuestas, incluidos los errores, usan el formato:
+
+```json
+{ "ok": true, "mensaje": "Texto descriptivo", "data": {} }
+```

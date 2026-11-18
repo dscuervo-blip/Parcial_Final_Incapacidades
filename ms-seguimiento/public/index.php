@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Middleware\CorsMiddleware;
+use App\Middleware\JsonErrorRenderer;
 use Dotenv\Dotenv;
 use Slim\Factory\AppFactory;
 
@@ -23,7 +24,11 @@ $app->addBodyParsingMiddleware();
 $app->addRoutingMiddleware();
 
 $debug = filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOLEAN);
-$app->addErrorMiddleware($debug, true, true);
+$errorMiddleware = $app->addErrorMiddleware($debug, true, true);
+// Los errores (404, 405, 500...) siempre se devuelven en JSON.
+$errorHandler = $errorMiddleware->getDefaultErrorHandler();
+$errorHandler->registerErrorRenderer('application/json', JsonErrorRenderer::class);
+$errorHandler->forceContentType('application/json');
 
 // CORS se agrega al final para que envuelva también las respuestas de error.
 $app->add(new CorsMiddleware());
