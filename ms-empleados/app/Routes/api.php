@@ -23,5 +23,7 @@ return function (App $app): void {
         $grupo->get('', [EmpleadoController::class, 'index']);
         $grupo->get('/areas', [EmpleadoController::class, 'areas']);
         $grupo->get('/{id:[0-9]+}', [EmpleadoController::class, 'show']);
+        $grupo->post('', [EmpleadoController::class, 'store']);
+        $grupo->put('/{id:[0-9]+}', [EmpleadoController::class, 'update']);
     })->add(new AuthMiddleware(['administrador', 'gestion_humana']));
 };

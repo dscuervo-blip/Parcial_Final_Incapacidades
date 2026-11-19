@@ -57,5 +57,20 @@ Requieren token de un usuario con rol `administrador` o `gestion_humana`.
 | GET | `/empleados` | Lista empleados. Filtros opcionales: `documento` (coincidencia parcial), `area`, `estado` (`activo`/`inactivo`), `buscar` (nombre, apellido, correo o cargo). |
 | GET | `/empleados/areas` | Áreas registradas, para llenar filtros. |
 | GET | `/empleados/{id}` | Detalle de un empleado. 404 si no existe. |
+| POST | `/empleados` | Registra un empleado. Responde 201. |
+| PUT | `/empleados/{id}` | Actualiza información personal, cargo, área y estado. |
 
 Ejemplo: `GET /empleados?area=Tecnologia&estado=activo`
+
+Cuerpo de `POST` / `PUT` (JSON):
+
+```json
+{
+  "nombres": "Ana", "apellidos": "Ruiz", "documento": "55443322",
+  "correo": "ana@empresa.com", "telefono": "3105550000",
+  "cargo": "Analista", "area": "Calidad", "fecha_ingreso": "2025-03-10",
+  "estado": "activo"
+}
+```
+
+Validaciones: todos los campos son obligatorios (salvo `estado`, que por defecto es `activo`); el documento solo admite números (mínimo 5 dígitos) y no puede repetirse; el correo debe ser válido y no puede repetirse; el teléfono admite de 7 a 20 dígitos; la fecha de ingreso debe ser válida y no futura. Los errores se devuelven con código 422 y el detalle por campo en `data.errores`.
