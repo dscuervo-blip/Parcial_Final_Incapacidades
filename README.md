@@ -45,3 +45,17 @@ Todas las respuestas, incluidos los errores, usan el formato:
 ```json
 { "ok": true, "mensaje": "Texto descriptivo", "data": {} }
 ```
+
+## Endpoints
+
+### ms-empleados (puerto 8002)
+
+Requieren token de un usuario con rol `administrador` o `gestion_humana`.
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | `/empleados` | Lista empleados. Filtros opcionales: `documento` (coincidencia parcial), `area`, `estado` (`activo`/`inactivo`), `buscar` (nombre, apellido, correo o cargo). |
+| GET | `/empleados/areas` | Áreas registradas, para llenar filtros. |
+| GET | `/empleados/{id}` | Detalle de un empleado. 404 si no existe. |
+
+Ejemplo: `GET /empleados?area=Tecnologia&estado=activo`

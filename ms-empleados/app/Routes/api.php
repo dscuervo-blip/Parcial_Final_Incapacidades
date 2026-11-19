@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Controllers\EmpleadoController;
 use App\Controllers\HomeController;
 use App\Controllers\SesionController;
 use App\Middleware\AuthMiddleware;
@@ -16,4 +17,11 @@ return function (App $app): void {
     $app->group('', function (RouteCollectorProxy $grupo): void {
         $grupo->get('/sesion', [SesionController::class, 'actual']);
     })->add(new AuthMiddleware());
+
+    // Gestión de empleados: solo administrador y gestión humana
+    $app->group('/empleados', function (RouteCollectorProxy $grupo): void {
+        $grupo->get('', [EmpleadoController::class, 'index']);
+        $grupo->get('/areas', [EmpleadoController::class, 'areas']);
+        $grupo->get('/{id:[0-9]+}', [EmpleadoController::class, 'show']);
+    })->add(new AuthMiddleware(['administrador', 'gestion_humana']));
 };

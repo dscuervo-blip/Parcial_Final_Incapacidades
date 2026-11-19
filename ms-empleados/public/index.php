@@ -14,6 +14,9 @@ $dotenv = Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
 $dotenv->required(['DB_HOST', 'DB_DATABASE', 'DB_USERNAME']);
 
+// Zona horaria de la aplicación (debe coincidir con la de MySQL).
+date_default_timezone_set($_ENV['APP_TIMEZONE'] ?? 'America/Bogota');
+
 // 2. Base de datos (Eloquent)
 require __DIR__ . '/../app/Config/database.php';
 
