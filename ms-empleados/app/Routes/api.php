@@ -25,5 +25,6 @@ return function (App $app): void {
         $grupo->get('/{id:[0-9]+}', [EmpleadoController::class, 'show']);
         $grupo->post('', [EmpleadoController::class, 'store']);
         $grupo->put('/{id:[0-9]+}', [EmpleadoController::class, 'update']);
+        $grupo->patch('/{id:[0-9]+}/estado', [EmpleadoController::class, 'cambiarEstado']);
     })->add(new AuthMiddleware(['administrador', 'gestion_humana']));
 };

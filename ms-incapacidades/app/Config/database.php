@@ -11,6 +11,8 @@ use Illuminate\Database\Capsule\Manager as Capsule;
  * - "default": base de datos propia del microservicio.
  * - "auth":    conexión de SOLO LECTURA a la BD de ms-auth, usada únicamente
  *              por AuthMiddleware para validar el token y la sesión activa.
+ * - "empleados": conexión de SOLO LECTURA a la BD de ms-empleados, para comprobar
+ *              que el empleado exista y mostrar su nombre en los listados.
  */
 $capsule = new Capsule();
 
@@ -36,6 +38,14 @@ $capsule->addConnection($comunes + [
     'username' => $_ENV['AUTH_DB_USERNAME'] ?? 'root',
     'password' => $_ENV['AUTH_DB_PASSWORD'] ?? '',
 ], 'auth');
+
+$capsule->addConnection($comunes + [
+    'host'     => $_ENV['EMPLEADOS_DB_HOST'] ?? '127.0.0.1',
+    'port'     => $_ENV['EMPLEADOS_DB_PORT'] ?? '3306',
+    'database' => $_ENV['EMPLEADOS_DB_DATABASE'] ?? 'ms-empleados',
+    'username' => $_ENV['EMPLEADOS_DB_USERNAME'] ?? 'root',
+    'password' => $_ENV['EMPLEADOS_DB_PASSWORD'] ?? '',
+], 'empleados');
 
 $capsule->setAsGlobal();
 $capsule->bootEloquent();

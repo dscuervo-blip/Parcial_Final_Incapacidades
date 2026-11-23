@@ -87,6 +87,39 @@ class EmpleadoController extends Controller
     }
 
     /**
+     * PATCH /empleados/{id}/estado
+     * Cambia el estado del empleado entre activo e inactivo. Cuerpo: {"estado": "inactivo"}
+     */
+    public function cambiarEstado(Request $request, Response $response, array $args): Response
+    {
+        $empleado = Empleado::find((int) $args['id']);
+
+        if ($empleado === null) {
+            return $this->json($response, false, 'El empleado no existe.', null, 404);
+        }
+
+        $estado = trim((string) (((array) ($request->getParsedBody() ?? []))['estado'] ?? ''));
+
+        if (!in_array($estado, Empleado::ESTADOS, true)) {
+            return $this->json($response, false, 'Revise los datos enviados.', [
+                'errores' => ['estado' => 'El estado debe ser "activo" o "inactivo".'],
+            ], 422);
+        }
+
+        if ($empleado->estado === $estado) {
+            return $this->json($response, false, "El empleado ya se encuentra {$estado}.", null, 409);
+        }
+
+        $empleado->update(['estado' => $estado]);
+
+        $mensaje = $estado === 'activo'
+            ? 'Empleado activado correctamente.'
+            : 'Empleado inactivado correctamente.';
+
+        return $this->json($response, true, $mensaje, $empleado->fresh());
+    }
+
+    /**
      * Toma solo los campos permitidos y les quita espacios sobrantes.
      */
     private function limpiar(array $entrada): array

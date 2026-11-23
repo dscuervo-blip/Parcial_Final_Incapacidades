@@ -59,6 +59,7 @@ Requieren token de un usuario con rol `administrador` o `gestion_humana`.
 | GET | `/empleados/{id}` | Detalle de un empleado. 404 si no existe. |
 | POST | `/empleados` | Registra un empleado. Responde 201. |
 | PUT | `/empleados/{id}` | Actualiza información personal, cargo, área y estado. |
+| PATCH | `/empleados/{id}/estado` | Activa o inactiva al empleado. Cuerpo: `{"estado": "inactivo"}`. 409 si ya tiene ese estado. |
 
 Ejemplo: `GET /empleados?area=Tecnologia&estado=activo`
 
@@ -74,3 +75,27 @@ Cuerpo de `POST` / `PUT` (JSON):
 ```
 
 Validaciones: todos los campos son obligatorios (salvo `estado`, que por defecto es `activo`); el documento solo admite números (mínimo 5 dígitos) y no puede repetirse; el correo debe ser válido y no puede repetirse; el teléfono admite de 7 a 20 dígitos; la fecha de ingreso debe ser válida y no futura. Los errores se devuelven con código 422 y el detalle por campo en `data.errores`.
+
+### ms-incapacidades (puerto 8003)
+
+Requieren token de un usuario con rol `administrador` o `gestion_humana`.
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | `/incapacidades` | Lista incapacidades (las más recientes primero), con los datos básicos del empleado. |
+| GET | `/incapacidades/catalogos` | Tipos y estados permitidos, para llenar filtros y formularios. |
+| GET | `/incapacidades/{id}` | Detalle de una incapacidad. 404 si no existe. |
+
+Filtros opcionales de `GET /incapacidades`:
+
+| Parámetro | Descripción |
+|---|---|
+| `empleado_id` | Id exacto del empleado. |
+| `empleado` | Nombre, apellido o documento del empleado (coincidencia parcial). |
+| `estado` | `registrada`, `en_revision`, `aprobada`, `rechazada` o `finalizada`. |
+| `tipo` | `enfermedad_general`, `accidente_laboral`, `licencia_medica` o `incapacidad_temporal`. |
+| `fecha_desde`, `fecha_hasta` | Incapacidades que se cruzan con ese rango (formato `AAAA-MM-DD`). |
+
+Ejemplo: `GET /incapacidades?empleado=laura&estado=en_revision`
+
+Para mostrar el nombre del empleado y buscar por él, ms-incapacidades usa una conexión **de solo lectura** (`empleados`, variables `EMPLEADOS_DB_*`) a la base de datos de ms-empleados. Nunca modifica esa base de datos.
