@@ -44,6 +44,29 @@ class Incapacidad extends Model
     }
 
     /**
+     * Días de incapacidad contando el día inicial y el final (01/06 al 05/06 = 5 días).
+     */
+    public static function calcularDias(string $inicio, string $fin): int
+    {
+        return (new \DateTimeImmutable($inicio))->diff(new \DateTimeImmutable($fin))->days + 1;
+    }
+
+    /**
+     * Incapacidades del empleado que se cruzan con el rango indicado.
+     * Las rechazadas no cuentan, porque no tienen efecto.
+     */
+    public static function queSeCruzan(int $empleadoId, string $inicio, string $fin, ?int $excluirId = null): Builder
+    {
+        return static::query()
+            ->where('empleado_id', $empleadoId)
+            ->where('estado', '!=', 'rechazada')
+            ->where('fecha_inicio', '<=', $fin)
+            ->where('fecha_fin', '>=', $inicio)
+            ->when($excluirId !== null, fn (Builder $q) => $q->where('id', '!=', $excluirId))
+            ->orderBy('fecha_inicio');
+    }
+
+    /**
      * Aplica los filtros de búsqueda recibidos por query string.
      *
      * - empleado_ids: lista de ids (ya resuelta a partir del texto buscado).

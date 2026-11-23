@@ -23,5 +23,6 @@ return function (App $app): void {
         $grupo->get('', [IncapacidadController::class, 'index']);
         $grupo->get('/catalogos', [IncapacidadController::class, 'catalogos']);
         $grupo->get('/{id:[0-9]+}', [IncapacidadController::class, 'show']);
+        $grupo->post('', [IncapacidadController::class, 'store']);
     })->add(new AuthMiddleware(['administrador', 'gestion_humana']));
 };

@@ -85,6 +85,7 @@ Requieren token de un usuario con rol `administrador` o `gestion_humana`.
 | GET | `/incapacidades` | Lista incapacidades (las más recientes primero), con los datos básicos del empleado. |
 | GET | `/incapacidades/catalogos` | Tipos y estados permitidos, para llenar filtros y formularios. |
 | GET | `/incapacidades/{id}` | Detalle de una incapacidad. 404 si no existe. |
+| POST | `/incapacidades` | Registra una incapacidad. Responde 201. Siempre inicia en estado `registrada`. |
 
 Filtros opcionales de `GET /incapacidades`:
 
@@ -99,3 +100,24 @@ Filtros opcionales de `GET /incapacidades`:
 Ejemplo: `GET /incapacidades?empleado=laura&estado=en_revision`
 
 Para mostrar el nombre del empleado y buscar por él, ms-incapacidades usa una conexión **de solo lectura** (`empleados`, variables `EMPLEADOS_DB_*`) a la base de datos de ms-empleados. Nunca modifica esa base de datos.
+
+Cuerpo de `POST /incapacidades` (JSON):
+
+```json
+{
+  "empleado_id": 1, "fecha_inicio": "2026-07-01", "fecha_fin": "2026-07-03",
+  "tipo": "enfermedad_general", "diagnostico_general": "Gripa",
+  "entidad_medica": "EPS Salud", "observaciones": "Opcional"
+}
+```
+
+Validaciones:
+
+- Todos los campos son obligatorios, salvo `observaciones`.
+- El empleado debe existir y estar activo.
+- Las fechas deben ser válidas (`AAAA-MM-DD`) y la de fin no puede ser anterior a la de inicio (máximo 180 días).
+- El tipo debe ser uno de los del catálogo.
+- No se permiten incapacidades del mismo empleado con fechas que se crucen (las rechazadas no cuentan).
+- `dias_incapacidad` se calcula automáticamente contando el día inicial y el final (del 01/06 al 05/06 = 5 días).
+
+Los errores se devuelven con código 422 y el detalle por campo en `data.errores`.
